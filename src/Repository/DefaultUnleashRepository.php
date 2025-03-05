@@ -82,26 +82,38 @@ use Unleash\Client\Unleash;
  *       impressionData?: bool,
  *   }
  */
-final readonly class DefaultUnleashRepository implements UnleashRepository
+final class DefaultUnleashRepository implements UnleashRepository
 {
-    public function __construct(
-        private ClientInterface $httpClient,
-        private RequestFactoryInterface $requestFactory,
-        private UnleashConfiguration $configuration,
-    ) {
+    /**
+     * @readonly
+     * @var \Psr\Http\Client\ClientInterface
+     */
+    private $httpClient;
+    /**
+     * @readonly
+     * @var \Psr\Http\Message\RequestFactoryInterface
+     */
+    private $requestFactory;
+    /**
+     * @readonly
+     * @var \Unleash\Client\Configuration\UnleashConfiguration
+     */
+    private $configuration;
+    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, UnleashConfiguration $configuration)
+    {
+        $this->httpClient = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->configuration = $configuration;
     }
-
     /**
      * @throws ClientExceptionInterface
      * @throws InvalidArgumentException
      * @throws JsonException
      */
-    #[Override]
     public function findFeature(string $featureName): ?Feature
     {
         $features = $this->getFeatures();
         assert(is_array($features));
-
         return $features[$featureName] ?? null;
     }
 
@@ -112,14 +124,12 @@ final readonly class DefaultUnleashRepository implements UnleashRepository
      *
      * @return iterable<Feature>
      */
-    #[Override]
     public function getFeatures(): iterable
     {
         $features = $this->getCachedFeatures();
         if ($features === null) {
             $features = $this->fetchFeatures();
         }
-
         return $features;
     }
 
@@ -272,28 +282,28 @@ final readonly class DefaultUnleashRepository implements UnleashRepository
 
                     // Either find a resolved variant, or return the unresolved one.
                     $requiredVariants[] = $this->findVariant(
-                        name: $requiredVariant->getName(),
-                        feature: $feature,
-                        defaultVariant: $requiredVariant,
+                        $requiredVariant->getName(),
+                        $feature,
+                        $requiredVariant,
                     );
                 }
 
                 // Add it as a resolved dependency, this pass is complete and nothing more can be done with the dependency.
                 $dependencies[] = new DefaultFeatureDependency(
-                    feature: $feature,
-                    expectedState: $dependency->getExpectedState(),
-                    requiredVariants: $requiredVariants,
+                    $feature,
+                    $dependency->getExpectedState(),
+                    $requiredVariants,
                 );
             }
 
             // Everything except the dependencies is copied directly from the unresolved feature
             $features[$unresolvedFeature->getName()] = new DefaultFeature(
-                name: $unresolvedFeature->getName(),
-                enabled: $unresolvedFeature->isEnabled(),
-                strategies: $unresolvedFeature->getStrategies(),
-                variants: $unresolvedFeature->getVariants(),
-                impressionData: $unresolvedFeature->hasImpressionData(),
-                dependencies: $dependencies,
+                $unresolvedFeature->getName(),
+                $unresolvedFeature->isEnabled(),
+                $unresolvedFeature->getStrategies(),
+                $unresolvedFeature->getVariants(),
+                $unresolvedFeature->hasImpressionData(),
+                $dependencies,
             );
         }
     }
@@ -332,14 +342,14 @@ final readonly class DefaultUnleashRepository implements UnleashRepository
 
             $result[] = $dependencyResolved
                 ? new DefaultFeatureDependency(
-                    feature: $features[$dependentFeatureName],
-                    expectedState: $expectedState,
-                    requiredVariants: $requiredVariants,
+                    $features[$dependentFeatureName],
+                    $expectedState,
+                    $requiredVariants,
                 )
                 : new UnresolvedFeatureDependency(
-                    feature: $features[$dependentFeatureName] ?? new UnresolvedFeature($dependentFeatureName),
-                    expectedState: $expectedState,
-                    requiredVariants: $requiredVariants,
+                    $features[$dependentFeatureName] ?? new UnresolvedFeature($dependentFeatureName),
+                    $expectedState,
+                    $requiredVariants,
                 );
 
             if (!$dependencyResolved) {
@@ -543,7 +553,7 @@ final readonly class DefaultUnleashRepository implements UnleashRepository
                 );
                 $rawData = $this->getLastValidState();
             }
-            $rawData ??= $this->getBootstrappedResponse();
+            $rawData = $rawData ?? $this->getBootstrappedResponse();
             if ($rawData === null) {
                 throw new HttpResponseException(sprintf(
                     'Got invalid response code when getting features and no default bootstrap provided: %s',

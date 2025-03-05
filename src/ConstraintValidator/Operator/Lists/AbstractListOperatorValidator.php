@@ -10,9 +10,27 @@ use Unleash\Client\ConstraintValidator\Operator\AbstractOperatorValidator;
  */
 abstract class AbstractListOperatorValidator extends AbstractOperatorValidator
 {
-    #[Override]
-    protected function acceptsValues(array|string $values): bool
+    /**
+     * @param mixed[]|string $values
+     */
+    protected function acceptsValues($values): bool
     {
-        return is_array($values) && array_is_list($values);
+        $arrayIsListFunction = function (array $array) : bool {
+            if (function_exists('array_is_list')) {
+                return array_is_list($array);
+            }
+            if ($array === []) {
+                return true;
+            }
+            $current_key = 0;
+            foreach ($array as $key => $noop) {
+                if ($key !== $current_key) {
+                    return false;
+                }
+                ++$current_key;
+            }
+            return true;
+        };
+        return is_array($values) && $arrayIsListFunction($values);
     }
 }

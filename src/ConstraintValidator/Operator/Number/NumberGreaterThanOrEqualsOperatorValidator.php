@@ -9,11 +9,12 @@ use Override;
  */
 final class NumberGreaterThanOrEqualsOperatorValidator extends AbstractNumberOperatorValidator
 {
-    #[Override]
-    protected function validate(string $currentValue, array|string $searchInValue): bool
+    /**
+     * @param mixed[]|string $searchInValue
+     */
+    protected function validate(string $currentValue, $searchInValue): bool
     {
         assert(is_string($searchInValue));
-
         return $this->convert($currentValue) >= $this->convert($searchInValue);
     }
 }

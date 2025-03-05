@@ -7,12 +7,22 @@ use Unleash\Client\Exception\InvalidIpAddressException;
 /**
  * @internal
  */
-final readonly class NetworkCalculator
+final class NetworkCalculator
 {
-    public function __construct(
-        private string $ipAddress,
-        private int $networkSize
-    ) {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $ipAddress;
+    /**
+     * @readonly
+     * @var int
+     */
+    private $networkSize;
+    public function __construct(string $ipAddress, int $networkSize)
+    {
+        $this->ipAddress = $ipAddress;
+        $this->networkSize = $networkSize;
     }
 
     public static function fromString(string $ipAddressAndNetwork): self

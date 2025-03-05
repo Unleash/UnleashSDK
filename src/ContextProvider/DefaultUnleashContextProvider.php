@@ -7,10 +7,8 @@ use Override;
 use Unleash\Client\Configuration\Context;
 use Unleash\Client\Configuration\UnleashContext;
 
-final readonly class DefaultUnleashContextProvider implements UnleashContextProvider
+final class DefaultUnleashContextProvider implements UnleashContextProvider
 {
-    #[Pure]
-    #[Override]
     public function getContext(): Context
     {
         return new UnleashContext();

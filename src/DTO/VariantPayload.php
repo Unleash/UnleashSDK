@@ -9,7 +9,6 @@ use Unleash\Client\Enum\VariantPayloadType;
 
 interface VariantPayload extends JsonSerializable
 {
-    #[ExpectedValues(valuesFromClass: VariantPayloadType::class)]
     public function getType(): string;
 
     public function getValue(): string;

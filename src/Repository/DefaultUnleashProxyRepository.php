@@ -14,16 +14,30 @@ use Unleash\Client\DTO\DefaultProxyFeature;
 use Unleash\Client\DTO\ProxyFeature;
 use Unleash\Client\Helper\Url;
 
-final readonly class DefaultUnleashProxyRepository implements ProxyRepository
+final class DefaultUnleashProxyRepository implements ProxyRepository
 {
-    public function __construct(
-        private UnleashConfiguration $configuration,
-        private ClientInterface $httpClient,
-        private RequestFactoryInterface $requestFactory
-    ) {
+    /**
+     * @readonly
+     * @var \Unleash\Client\Configuration\UnleashConfiguration
+     */
+    private $configuration;
+    /**
+     * @readonly
+     * @var \Psr\Http\Client\ClientInterface
+     */
+    private $httpClient;
+    /**
+     * @readonly
+     * @var \Psr\Http\Message\RequestFactoryInterface
+     */
+    private $requestFactory;
+    public function __construct(UnleashConfiguration $configuration, ClientInterface $httpClient, RequestFactoryInterface $requestFactory)
+    {
+        $this->configuration = $configuration;
+        $this->httpClient = $httpClient;
+        $this->requestFactory = $requestFactory;
     }
 
-    #[Override]
     public function findFeatureByContext(string $featureName, ?Context $context = null): ?ProxyFeature
     {
         $apiKey = $this->configuration->getProxyKey();
@@ -33,9 +47,7 @@ final readonly class DefaultUnleashProxyRepository implements ProxyRepository
             throw new LogicException('No api proxy key was specified');
             // @codeCoverageIgnoreEnd
         }
-
         $cacheKey = $this->getCacheKey($featureName, $context);
-
         if ($this->configuration->getCache() !== null && $this->configuration->getCache()->has($cacheKey)) {
             $cachedFeature = $this->configuration->getCache()->get($cacheKey);
             if (is_array($cachedFeature)) {
@@ -45,25 +57,19 @@ final readonly class DefaultUnleashProxyRepository implements ProxyRepository
                 }
             }
         }
-
-        $context ??= new UnleashContext();
+        $context = $context ?? new UnleashContext();
         $featureUrl = (string) Url::appendPath($this->configuration->getUrl(), 'frontend/features/' . $featureName);
         $url = $this->addQuery($featureUrl, $this->contextToQueryString($context));
-
         $request = $this->requestFactory->createRequest('GET', $url)
             ->withHeader('Accept', 'application/json');
-
         foreach ($this->configuration->getHeaders() as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
-
         $request = $request->withHeader('Authorization', $apiKey);
-
         $response = $this->httpClient->sendRequest($request);
         if ($response->getStatusCode() != 200) {
             return null;
         }
-
         $body = json_decode($response->getBody(), true);
         if ($body === null) {
             return null;
@@ -79,7 +85,6 @@ final readonly class DefaultUnleashProxyRepository implements ProxyRepository
                 return new DefaultProxyFeature($featureData);
             }
         }
-
         return null;
     }
 
@@ -102,8 +107,12 @@ final readonly class DefaultUnleashProxyRepository implements ProxyRepository
             'remoteAddress' => $context->getIpAddress(),
         ];
 
-        $values = array_filter($values, fn (?string $value) => $value !== null);
-        $properties = array_filter($context->getCustomProperties(), fn (?string $value) => $value !== null);
+        $values = array_filter($values, function (?string $value) {
+            return $value !== null;
+        });
+        $properties = array_filter($context->getCustomProperties(), function (?string $value) {
+            return $value !== null;
+        });
 
         foreach ($values as $key => $value) {
             $query[$key] = $value;

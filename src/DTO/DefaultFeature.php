@@ -4,30 +4,57 @@ namespace Unleash\Client\DTO;
 
 use Override;
 
-final readonly class DefaultFeature implements Feature
+final class DefaultFeature implements Feature
 {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $name;
+    /**
+     * @readonly
+     * @var bool
+     */
+    private $enabled;
+    /**
+     * @var iterable<Strategy>
+     * @readonly
+     */
+    private $strategies;
+    /**
+     * @var array<Variant>
+     * @readonly
+     */
+    private $variants = [];
+    /**
+     * @readonly
+     * @var bool
+     */
+    private $impressionData = false;
+    /**
+     * @var array<FeatureDependency>
+     * @readonly
+     */
+    private $dependencies = [];
     /**
      * @param iterable<Strategy>       $strategies
      * @param array<Variant>           $variants
      * @param array<FeatureDependency> $dependencies
      */
-    public function __construct(
-        private string $name,
-        private bool $enabled,
-        private iterable $strategies,
-        private array $variants = [],
-        private bool $impressionData = false,
-        private array $dependencies = [],
-    ) {
+    public function __construct(string $name, bool $enabled, iterable $strategies, array $variants = [], bool $impressionData = false, array $dependencies = [])
+    {
+        $this->name = $name;
+        $this->enabled = $enabled;
+        $this->strategies = $strategies;
+        $this->variants = $variants;
+        $this->impressionData = $impressionData;
+        $this->dependencies = $dependencies;
     }
-
-    #[Override]
     public function getName(): string
     {
         return $this->name;
     }
 
-    #[Override]
     public function isEnabled(): bool
     {
         return $this->enabled;
@@ -36,7 +63,6 @@ final readonly class DefaultFeature implements Feature
     /**
      * @return iterable<Strategy>
      */
-    #[Override]
     public function getStrategies(): iterable
     {
         return $this->strategies;
@@ -45,13 +71,11 @@ final readonly class DefaultFeature implements Feature
     /**
      * @return array<Variant>
      */
-    #[Override]
     public function getVariants(): array
     {
         return $this->variants;
     }
 
-    #[Override]
     public function hasImpressionData(): bool
     {
         return $this->impressionData;

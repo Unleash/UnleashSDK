@@ -10,17 +10,23 @@ use Unleash\Client\DTO\Variant;
 use Unleash\Client\Enum\Stickiness;
 use Unleash\Client\Stickiness\StickinessCalculator;
 
-final readonly class DefaultVariantHandler implements VariantHandler
+final class DefaultVariantHandler implements VariantHandler
 {
-    private const int VARIANT_HASH_SEED = 86028157;
+    /**
+     * @readonly
+     * @var \Unleash\Client\Stickiness\StickinessCalculator
+     */
+    private $stickinessCalculator;
+    /**
+     * @var int
+     */
+    private const VARIANT_HASH_SEED = 86028157;
 
-    public function __construct(
-        private StickinessCalculator $stickinessCalculator,
-    ) {
+    public function __construct(StickinessCalculator $stickinessCalculator)
+    {
+        $this->stickinessCalculator = $stickinessCalculator;
     }
 
-    #[Pure]
-    #[Override]
     public function getDefaultVariant(): Variant
     {
         return new DefaultVariant(
@@ -32,7 +38,6 @@ final readonly class DefaultVariantHandler implements VariantHandler
     /**
      * @param array<Variant> $variants
      */
-    #[Override]
     public function selectVariant(array $variants, string $groupId, Context $context): ?Variant
     {
         $totalWeight = 0;
@@ -42,18 +47,15 @@ final readonly class DefaultVariantHandler implements VariantHandler
         if ($totalWeight <= 0) {
             return null;
         }
-
         if ($overridden = $this->findOverriddenVariant($variants, $context)) {
             return $overridden;
         }
-
         $stickiness = $this->calculateStickiness(
             $variants,
             $groupId,
             $context,
             $totalWeight,
         );
-
         $counter = 0;
         foreach ($variants as $variant) {
             if ($variant->getWeight() <= 0) {
@@ -64,10 +66,8 @@ final readonly class DefaultVariantHandler implements VariantHandler
                 return $variant;
             }
         }
-
         // while this is in theory possible to happen, it really cannot happen unless the Unleash server is misconfigured
         // and in that case there are bigger problems than missing code coverage
-
         // @codeCoverageIgnoreStart
         return null;
         // @codeCoverageIgnoreEnd
@@ -113,6 +113,6 @@ final readonly class DefaultVariantHandler implements VariantHandler
 
     private function randomString(): string
     {
-        return (string) random_int(1, 100_000);
+        return (string) random_int(1, 100000);
     }
 }
