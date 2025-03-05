@@ -12,7 +12,7 @@ use Unleash\Client\Enum\Stickiness;
 #[Deprecated(reason: 'The strategy has been deprecated, please use Gradual Rollout (flexibleRollout)')]
 final class GradualRolloutUserIdStrategyHandler extends AbstractStrategyHandler
 {
-    public function __construct(private readonly GradualRolloutStrategyHandler $rolloutStrategyHandler)
+    public function __construct(private GradualRolloutStrategyHandler $rolloutStrategyHandler)
     {
     }
 

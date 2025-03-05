@@ -6,7 +6,7 @@ use JetBrains\PhpStorm\ExpectedValues;
 use Override;
 use Unleash\Client\Enum\ConstraintOperator;
 
-final readonly class DefaultConstraint implements Constraint
+final class DefaultConstraint implements Constraint
 {
     /**
      * @param array<string> $values

@@ -11,7 +11,7 @@ use Unleash\Client\Enum\Stickiness;
 /**
  * @internal
  */
-final readonly class UnresolvedVariant implements Variant
+final class UnresolvedVariant implements Variant
 {
     public function __construct(
         private string $name,

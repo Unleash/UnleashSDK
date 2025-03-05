@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\ExpectedValues;
 use Override;
 use Unleash\Client\Enum\Stickiness;
 
-final readonly class DefaultVariant implements Variant
+final class DefaultVariant implements Variant
 {
     /**
      * @param array<VariantOverride> $overrides

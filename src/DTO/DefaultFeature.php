@@ -4,7 +4,7 @@ namespace Unleash\Client\DTO;
 
 use Override;
 
-final readonly class DefaultFeature implements Feature
+final class DefaultFeature implements Feature
 {
     /**
      * @param iterable<Strategy>       $strategies

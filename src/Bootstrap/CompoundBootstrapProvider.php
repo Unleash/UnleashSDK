@@ -8,10 +8,11 @@ use Override;
 use Traversable;
 use Unleash\Client\Exception\CompoundException;
 
-final readonly class CompoundBootstrapProvider implements BootstrapProvider
+final class CompoundBootstrapProvider implements BootstrapProvider
 {
     /**
      * @var BootstrapProvider[]
+     * @readonly
      */
     private array $bootstrapProviders;
 
@@ -54,8 +55,9 @@ final readonly class CompoundBootstrapProvider implements BootstrapProvider
      * @param array<Exception> $exceptions
      *
      * @throws CompoundException
+     * @return never
      */
-    private function throwExceptions(array $exceptions): never
+    private function throwExceptions(array $exceptions)
     {
         assert(count($exceptions) > 0);
         throw new CompoundException(...$exceptions);

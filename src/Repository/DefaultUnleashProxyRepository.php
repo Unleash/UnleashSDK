@@ -14,7 +14,7 @@ use Unleash\Client\DTO\DefaultProxyFeature;
 use Unleash\Client\DTO\ProxyFeature;
 use Unleash\Client\Helper\Url;
 
-final readonly class DefaultUnleashProxyRepository implements ProxyRepository
+final class DefaultUnleashProxyRepository implements ProxyRepository
 {
     public function __construct(
         private UnleashConfiguration $configuration,

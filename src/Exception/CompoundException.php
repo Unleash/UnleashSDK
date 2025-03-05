@@ -9,8 +9,9 @@ final class CompoundException extends Exception
 {
     /**
      * @var Throwable[]
+     * @readonly
      */
-    private readonly array $exceptions;
+    private array $exceptions;
 
     public function __construct(Throwable ...$exceptions)
     {

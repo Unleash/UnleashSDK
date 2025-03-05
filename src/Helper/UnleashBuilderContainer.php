@@ -17,7 +17,7 @@ use Unleash\Client\Stickiness\StickinessCalculator;
 /**
  * @internal
  */
-final readonly class UnleashBuilderContainer
+final class UnleashBuilderContainer
 {
     public function __construct(
         private CacheInterface $cache,

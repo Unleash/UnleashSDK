@@ -4,7 +4,7 @@ namespace Unleash\Client\DTO;
 
 use Override;
 
-final readonly class DefaultStrategy implements Strategy
+final class DefaultStrategy implements Strategy
 {
     /**
      * @param array<string,string> $parameters

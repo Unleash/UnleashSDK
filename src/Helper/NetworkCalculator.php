@@ -7,7 +7,7 @@ use Unleash\Client\Exception\InvalidIpAddressException;
 /**
  * @internal
  */
-final readonly class NetworkCalculator
+final class NetworkCalculator
 {
     public function __construct(
         private string $ipAddress,

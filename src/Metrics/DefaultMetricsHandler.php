@@ -9,7 +9,7 @@ use Unleash\Client\DTO\Feature;
 use Unleash\Client\DTO\Variant;
 use Unleash\Client\Enum\CacheKey;
 
-final readonly class DefaultMetricsHandler implements MetricsHandler
+final class DefaultMetricsHandler implements MetricsHandler
 {
     public function __construct(
         private MetricsSender $metricsSender,

@@ -11,7 +11,7 @@ use Unleash\Client\Enum\Stickiness;
 use Unleash\Client\Metrics\MetricsHandler;
 use Unleash\Client\Repository\ProxyRepository;
 
-final readonly class DefaultProxyUnleash implements Unleash
+final class DefaultProxyUnleash implements Unleash
 {
     public function __construct(
         private ProxyRepository $repository,

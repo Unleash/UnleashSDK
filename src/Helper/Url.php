@@ -5,7 +5,7 @@ namespace Unleash\Client\Helper;
 use Override;
 use Stringable;
 
-final readonly class Url implements Stringable
+final class Url implements Stringable
 {
     /**
      * @param array<string>|null $tags

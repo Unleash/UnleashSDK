@@ -15,13 +15,12 @@ use Unleash\Client\Enum\ImpressionDataEventType;
 final class ImpressionDataEvent extends AbstractEvent implements JsonSerializable
 {
     public function __construct(
-        #[ExpectedValues(valuesFromClass: ImpressionDataEventType::class)]
-        private readonly string $eventType,
-        private readonly string $eventId,
-        private readonly UnleashConfiguration $configuration,
-        private readonly Context $context,
-        private readonly Feature $feature,
-        private readonly ?Variant $variant,
+        #[ExpectedValues(valuesFromClass: ImpressionDataEventType::class)]private string $eventType,
+        private string $eventId,
+        private UnleashConfiguration $configuration,
+        private Context $context,
+        private Feature $feature,
+        private ?Variant $variant,
     ) {
     }
 
