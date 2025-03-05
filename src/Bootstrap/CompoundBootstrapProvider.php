@@ -8,12 +8,12 @@ use Override;
 use Traversable;
 use Unleash\Client\Exception\CompoundException;
 
-final readonly class CompoundBootstrapProvider implements BootstrapProvider
+final class CompoundBootstrapProvider implements BootstrapProvider
 {
     /**
      * @var BootstrapProvider[]
      */
-    private array $bootstrapProviders;
+    private readonly array $bootstrapProviders;
 
     public function __construct(
         BootstrapProvider ...$bootstrapProviders

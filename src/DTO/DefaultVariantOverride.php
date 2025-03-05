@@ -4,14 +4,14 @@ namespace Unleash\Client\DTO;
 
 use Override;
 
-final readonly class DefaultVariantOverride implements VariantOverride
+final class DefaultVariantOverride implements VariantOverride
 {
     /**
      * @param array<string> $values
      */
     public function __construct(
-        private string $field,
-        private array $values,
+        private readonly string $field,
+        private readonly array $values,
     ) {
     }
 

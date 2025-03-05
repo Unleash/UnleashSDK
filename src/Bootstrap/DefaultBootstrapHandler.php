@@ -6,7 +6,7 @@ use JsonException;
 use Override;
 use Traversable;
 
-final readonly class DefaultBootstrapHandler implements BootstrapHandler
+final class DefaultBootstrapHandler implements BootstrapHandler
 {
     /**
      * @throws JsonException

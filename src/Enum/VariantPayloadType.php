@@ -4,9 +4,18 @@ namespace Unleash\Client\Enum;
 
 final class VariantPayloadType
 {
-    public const string STRING = 'string';
+    /**
+     * @var string
+     */
+    public const STRING = 'string';
 
-    public const string JSON = 'json';
+    /**
+     * @var string
+     */
+    public const JSON = 'json';
 
-    public const string CSV = 'csv';
+    /**
+     * @var string
+     */
+    public const CSV = 'csv';
 }

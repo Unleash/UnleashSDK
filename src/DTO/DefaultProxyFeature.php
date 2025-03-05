@@ -6,15 +6,15 @@ use JsonSerializable;
 use Override;
 use Unleash\Client\Enum\Stickiness;
 
-final readonly class DefaultProxyFeature implements ProxyFeature, JsonSerializable
+final class DefaultProxyFeature implements ProxyFeature, JsonSerializable
 {
-    private string $name;
+    private readonly string $name;
 
-    private bool $enabled;
+    private readonly bool $enabled;
 
-    private Variant $variant;
+    private readonly Variant $variant;
 
-    private bool $impressionData;
+    private readonly bool $impressionData;
 
     /**
      * @param array{
