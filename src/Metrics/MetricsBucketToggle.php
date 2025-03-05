@@ -8,15 +8,29 @@ use Unleash\Client\DTO\Variant;
 /**
  * @internal
  */
-final readonly class MetricsBucketToggle
+final class MetricsBucketToggle
 {
-    public function __construct(
-        private Feature $feature,
-        private bool $success,
-        private ?Variant $variant = null,
-    ) {
+    /**
+     * @readonly
+     * @var \Unleash\Client\DTO\Feature
+     */
+    private $feature;
+    /**
+     * @readonly
+     * @var bool
+     */
+    private $success;
+    /**
+     * @readonly
+     * @var \Unleash\Client\DTO\Variant|null
+     */
+    private $variant;
+    public function __construct(Feature $feature, bool $success, ?Variant $variant = null)
+    {
+        $this->feature = $feature;
+        $this->success = $success;
+        $this->variant = $variant;
     }
-
     public function getFeature(): Feature
     {
         return $this->feature;

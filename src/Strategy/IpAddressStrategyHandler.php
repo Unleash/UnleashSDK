@@ -14,21 +14,19 @@ final class IpAddressStrategyHandler extends AbstractStrategyHandler
     /**
      * @throws MissingArgumentException
      */
-    #[Override]
     public function isEnabled(Strategy $strategy, Context $context): bool
     {
         if (!$ipAddresses = $this->findParameter('IPs', $strategy)) {
             throw new MissingArgumentException("The remote server did not return 'IPs' config");
         }
         $ipAddresses = array_map('trim', explode(',', $ipAddresses));
-
         $enabled = false;
         $currentIpAddress = $context->getIpAddress();
         if ($currentIpAddress !== null) {
             foreach ($ipAddresses as $ipAddress) {
                 try {
                     $calculator = NetworkCalculator::fromString($ipAddress);
-                } catch (InvalidIpAddressException) {
+                } catch (InvalidIpAddressException $exception) {
                     continue;
                 }
                 if ($calculator->isInRange($currentIpAddress)) {
@@ -37,19 +35,15 @@ final class IpAddressStrategyHandler extends AbstractStrategyHandler
                 }
             }
         }
-
         if (!$enabled) {
             return false;
         }
-
         if (!$this->validateConstraints($strategy, $context)) {
             return false;
         }
-
         return true;
     }
 
-    #[Override]
     public function getStrategyName(): string
     {
         return 'remoteAddress';

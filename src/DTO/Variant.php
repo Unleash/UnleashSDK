@@ -21,6 +21,5 @@ interface Variant extends JsonSerializable
      */
     public function getOverrides(): array;
 
-    #[ExpectedValues(valuesFromClass: Stickiness::class)]
     public function getStickiness(): string;
 }

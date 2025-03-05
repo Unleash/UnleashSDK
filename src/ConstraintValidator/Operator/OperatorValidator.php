@@ -14,5 +14,5 @@ interface OperatorValidator
      *
      * @throws OperatorValidatorException
      */
-    public function __invoke(string $currentValue, array|string|null $allowedValues): bool;
+    public function __invoke(string $currentValue, $allowedValues): bool;
 }

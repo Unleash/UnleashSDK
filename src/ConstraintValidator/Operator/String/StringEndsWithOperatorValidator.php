@@ -9,11 +9,12 @@ use Override;
  */
 final class StringEndsWithOperatorValidator extends AbstractStringOperatorValidator
 {
-    #[Override]
-    protected function validate(string $currentValue, array|string $searchInValue): bool
+    /**
+     * @param mixed[]|string $searchInValue
+     */
+    protected function validate(string $currentValue, $searchInValue): bool
     {
         assert(is_string($searchInValue));
-
-        return str_ends_with($currentValue, $searchInValue);
+        return substr_compare($currentValue, $searchInValue, -strlen($searchInValue)) === 0;
     }
 }

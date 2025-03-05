@@ -23,7 +23,7 @@ final class DefaultImplementationLocator
     /**
      * @var array<string,string[]>
      */
-    private array $supportedPackages = [
+    private $supportedPackages = [
         'cache' => [
             'symfony/cache',
             'cache/filesystem-adapter',
@@ -33,7 +33,7 @@ final class DefaultImplementationLocator
     /**
      * @var array<string,array<string,array<mixed>>>
      */
-    private array $defaultImplementations = [
+    private $defaultImplementations = [
         'cache' => [
             FilesystemCachePool::class => [
                 Filesystem::class => [
@@ -60,7 +60,7 @@ final class DefaultImplementationLocator
              * let's silence the error.
              */
             return @Psr18ClientDiscovery::find();
-        } catch (NotFoundException) {
+        } catch (NotFoundException $exception) {
             return null;
         }
     }
@@ -70,7 +70,7 @@ final class DefaultImplementationLocator
         try {
             return Psr17FactoryDiscovery::findRequestFactory();
             // @codeCoverageIgnoreStart
-        } catch (NotFoundException) {
+        } catch (NotFoundException $exception) {
             /**
              * This will only be thrown if a HTTP client was found, but a request factory is not.
              * Due to how php-http/discovery works, this scenario is unlikely to happen.
@@ -138,7 +138,7 @@ final class DefaultImplementationLocator
                 }
                 $resolvedParameters[] = $this->constructObject($parameter, $value);
             } else {
-                if (is_string($value) && str_contains($value, '{{tmpDir}}')) {
+                if (is_string($value) && strpos($value, '{{tmpDir}}') !== false) {
                     $value = str_replace('{{tmpDir}}', sys_get_temp_dir(), $value);
                 }
                 $resolvedParameters[] = $value;

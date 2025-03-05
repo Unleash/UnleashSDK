@@ -22,36 +22,123 @@ use Unleash\Client\Unleash;
 final class UnleashConfiguration
 {
     /**
-     * @param array<string,string> $headers
+     * @var string|\Stringable
      */
-    public function __construct(
-        private string|Stringable $url,
-        private string|Stringable $appName,
-        private string|Stringable $instanceId,
-        private ?CacheInterface $cache = null,
-        private int $ttl = 15,
-        private int $metricsInterval = 60_000,
-        private bool $metricsEnabled = true,
-        private array $headers = [],
-        private bool $autoRegistrationEnabled = true,
-        private UnleashContextProvider $contextProvider = new DefaultUnleashContextProvider(),
-        private BootstrapHandler $bootstrapHandler = new DefaultBootstrapHandler(),
-        private BootstrapProvider $bootstrapProvider = new EmptyBootstrapProvider(),
-        private bool $fetchingEnabled = true,
-        private EventDispatcherInterface $eventDispatcher = new EventDispatcher(),
-        private int $staleTtl = 30 * 60,
-        private ?CacheInterface $staleCache = null,
-        private ?string $proxyKey = null,
-        private ?CacheInterface $metricsCache = null,
-        private MetricsBucketSerializer $metricsBucketSerializer = new DefaultMetricsBucketSerializer(),
+    private $url;
+    /**
+     * @var string|\Stringable
+     */
+    private $appName;
+    /**
+     * @var string|\Stringable
+     */
+    private $instanceId;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $cache;
+    /**
+     * @var int
+     */
+    private $ttl = 15;
+    /**
+     * @var int
+     */
+    private $metricsInterval = 60000;
+    /**
+     * @var bool
+     */
+    private $metricsEnabled = true;
+    /**
+     * @var array<string, string>
+     */
+    private $headers = [];
+    /**
+     * @var bool
+     */
+    private $autoRegistrationEnabled = true;
+    /**
+     * @var \Unleash\Client\ContextProvider\UnleashContextProvider
+     */
+    private $contextProvider;
+    /**
+     * @var \Unleash\Client\Bootstrap\BootstrapHandler
+     */
+    private $bootstrapHandler;
+    /**
+     * @var \Unleash\Client\Bootstrap\BootstrapProvider
+     */
+    private $bootstrapProvider;
+    /**
+     * @var bool
+     */
+    private $fetchingEnabled = true;
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    private $eventDispatcher;
+    /**
+     * @var int
+     */
+    private $staleTtl = 30 * 60;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $staleCache;
+    /**
+     * @var string|null
+     */
+    private $proxyKey;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $metricsCache;
+    /**
+     * @var \Unleash\Client\Metrics\MetricsBucketSerializer
+     */
+    private $metricsBucketSerializer;
+    /**
+     * @var string
+     */
+    private $sdkVersion = Unleash::SDK_NAME . ':' . Unleash::SDK_VERSION;
+    /**
+     * @param array<string,string> $headers
+     * @param string|\Stringable $url
+     * @param string|\Stringable $appName
+     * @param string|\Stringable $instanceId
+     */
+    public function __construct($url, $appName, $instanceId, ?CacheInterface $cache = null, int $ttl = 15, int $metricsInterval = 60000, bool $metricsEnabled = true, array $headers = [], bool $autoRegistrationEnabled = true, UnleashContextProvider $contextProvider = null, BootstrapHandler $bootstrapHandler = null, BootstrapProvider $bootstrapProvider = null, bool $fetchingEnabled = true, EventDispatcherInterface $eventDispatcher = null, int $staleTtl = 30 * 60, ?CacheInterface $staleCache = null, ?string $proxyKey = null, ?CacheInterface $metricsCache = null, MetricsBucketSerializer $metricsBucketSerializer = null, string $sdkVersion = Unleash::SDK_NAME . ':' . Unleash::SDK_VERSION)
+    {
+        $contextProvider = $contextProvider ?? new DefaultUnleashContextProvider();
+        $bootstrapHandler = $bootstrapHandler ?? new DefaultBootstrapHandler();
+        $bootstrapProvider = $bootstrapProvider ?? new EmptyBootstrapProvider();
+        $eventDispatcher = $eventDispatcher ?? new EventDispatcher();
+        $metricsBucketSerializer = $metricsBucketSerializer ?? new DefaultMetricsBucketSerializer();
+        $this->url = $url;
+        $this->appName = $appName;
+        $this->instanceId = $instanceId;
+        $this->cache = $cache;
+        $this->ttl = $ttl;
+        $this->metricsInterval = $metricsInterval;
+        $this->metricsEnabled = $metricsEnabled;
+        $this->headers = $headers;
+        $this->autoRegistrationEnabled = $autoRegistrationEnabled;
+        $this->contextProvider = $contextProvider;
+        $this->bootstrapHandler = $bootstrapHandler;
+        $this->bootstrapProvider = $bootstrapProvider;
+        $this->fetchingEnabled = $fetchingEnabled;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->staleTtl = $staleTtl;
+        $this->staleCache = $staleCache;
+        $this->proxyKey = $proxyKey;
+        $this->metricsCache = $metricsCache;
+        $this->metricsBucketSerializer = $metricsBucketSerializer;
         /**
          * SDK identifier in a format of `unleash-client-<language-or-framework>:<semver>`.
          */
-        private string $sdkVersion = Unleash::SDK_NAME . ':' . Unleash::SDK_VERSION,
-    ) {
-        $this->contextProvider ??= new DefaultUnleashContextProvider();
+        $this->sdkVersion = $sdkVersion;
+        $this->contextProvider = $this->contextProvider ?? new DefaultUnleashContextProvider();
     }
-
     public function getCache(): CacheInterface
     {
         if ($this->cache === null) {
@@ -148,21 +235,30 @@ final class UnleashConfiguration
         return $this->metricsEnabled;
     }
 
-    public function setUrl(string|Stringable $url): self
+    /**
+     * @param string|\Stringable $url
+     */
+    public function setUrl($url): self
     {
         $this->url = $url;
 
         return $this;
     }
 
-    public function setAppName(string|Stringable $appName): self
+    /**
+     * @param string|\Stringable $appName
+     */
+    public function setAppName($appName): self
     {
         $this->appName = $appName;
 
         return $this;
     }
 
-    public function setInstanceId(string|Stringable $instanceId): self
+    /**
+     * @param string|\Stringable $instanceId
+     */
+    public function setInstanceId($instanceId): self
     {
         $this->instanceId = $instanceId;
 
@@ -235,7 +331,6 @@ final class UnleashConfiguration
         return $this;
     }
 
-    #[Pure]
     public function getBootstrapHandler(): BootstrapHandler
     {
         return $this->bootstrapHandler;
@@ -248,7 +343,6 @@ final class UnleashConfiguration
         return $this;
     }
 
-    #[Pure]
     public function getBootstrapProvider(): BootstrapProvider
     {
         return $this->bootstrapProvider;

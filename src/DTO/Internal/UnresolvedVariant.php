@@ -11,45 +11,42 @@ use Unleash\Client\Enum\Stickiness;
 /**
  * @internal
  */
-final readonly class UnresolvedVariant implements Variant
+final class UnresolvedVariant implements Variant
 {
-    public function __construct(
-        private string $name,
-    ) {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $name;
+    public function __construct(string $name)
+    {
+        $this->name = $name;
     }
-
-    #[Override]
     public function getName(): string
     {
         return $this->name;
     }
 
-    #[Override]
     public function isEnabled(): bool
     {
         return false;
     }
 
-    #[Override]
     public function getPayload(): ?VariantPayload
     {
         return null;
     }
 
-    #[Override]
     public function getWeight(): int
     {
         return 0;
     }
 
-    #[Override]
     public function getOverrides(): array
     {
         return [];
     }
 
-    #[ExpectedValues(valuesFromClass: Stickiness::class)]
-    #[Override]
     public function getStickiness(): string
     {
         return Stickiness::DEFAULT;
@@ -62,8 +59,7 @@ final readonly class UnresolvedVariant implements Variant
      *
      * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
-    #[Override]
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         return null;
     }

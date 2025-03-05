@@ -10,12 +10,16 @@ use Unleash\Client\Stickiness\StickinessCalculator;
 
 final class GradualRolloutStrategyHandler extends AbstractStrategyHandler
 {
-    public function __construct(
-        private readonly StickinessCalculator $stickinessCalculator
-    ) {
+    /**
+     * @readonly
+     * @var \Unleash\Client\Stickiness\StickinessCalculator
+     */
+    private $stickinessCalculator;
+    public function __construct(StickinessCalculator $stickinessCalculator)
+    {
+        $this->stickinessCalculator = $stickinessCalculator;
     }
 
-    #[Override]
     public function isEnabled(Strategy $strategy, Context $context): bool
     {
         if (!$stickiness = $this->findParameter('stickiness', $strategy)) {
@@ -25,34 +29,37 @@ final class GradualRolloutStrategyHandler extends AbstractStrategyHandler
         if (!$rollout = $this->findParameter('rollout', $strategy)) {
             return false;
         }
-
-        $id = match (strtolower($stickiness)) {
-            Stickiness::DEFAULT => $context->getCurrentUserId() ?? $context->getSessionId() ?? random_int(1, 100_000),
-            Stickiness::RANDOM => random_int(1, 100_000),
-            Stickiness::USER_ID => $context->getCurrentUserId(),
-            Stickiness::SESSION_ID => $context->getSessionId(),
-            default => $context->findContextValue($stickiness),
-        };
+        switch (strtolower($stickiness)) {
+            case Stickiness::DEFAULT:
+                $id = $context->getCurrentUserId() ?? $context->getSessionId() ?? random_int(1, 100000);
+                break;
+            case Stickiness::RANDOM:
+                $id = random_int(1, 100000);
+                break;
+            case Stickiness::USER_ID:
+                $id = $context->getCurrentUserId();
+                break;
+            case Stickiness::SESSION_ID:
+                $id = $context->getSessionId();
+                break;
+            default:
+                $id = $context->findContextValue($stickiness);
+                break;
+        }
         if ($id === null) {
             return false;
         }
-
         $normalized = $this->stickinessCalculator->calculate((string) $id, $groupId);
-
         $enabled = $normalized <= (int) $rollout;
-
         if (!$enabled) {
             return false;
         }
-
         if (!$this->validateConstraints($strategy, $context)) {
             return false;
         }
-
         return true;
     }
 
-    #[Override]
     public function getStrategyName(): string
     {
         return 'flexibleRollout';

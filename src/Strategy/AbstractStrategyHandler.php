@@ -12,7 +12,6 @@ abstract class AbstractStrategyHandler implements StrategyHandler
 {
     use ConstraintValidatorTrait;
 
-    #[Override]
     public function supports(Strategy $strategy): bool
     {
         return $strategy->getName() === $this->getStrategyName();

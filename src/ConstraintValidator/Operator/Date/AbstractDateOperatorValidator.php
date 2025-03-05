@@ -13,18 +13,19 @@ use Unleash\Client\ConstraintValidator\Operator\AbstractOperatorValidator;
  */
 abstract class AbstractDateOperatorValidator extends AbstractOperatorValidator
 {
-    #[Override]
-    protected function acceptsValues(array|string $values): bool
+    /**
+     * @param mixed[]|string $values
+     */
+    protected function acceptsValues($values): bool
     {
         if (!is_string($values)) {
             return false;
         }
-
         try {
             new DateTimeImmutable($values);
 
             return true;
-        } catch (Exception) {
+        } catch (Exception $exception) {
             return false;
         }
     }

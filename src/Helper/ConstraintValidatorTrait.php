@@ -7,11 +7,14 @@ use Unleash\Client\ConstraintValidator\DefaultConstraintValidator;
 
 trait ConstraintValidatorTrait
 {
-    private ?ConstraintValidator $validator = null;
+    /**
+     * @var \Unleash\Client\ConstraintValidator\ConstraintValidator|null
+     */
+    private $validator;
 
     private function getValidator(): ConstraintValidator
     {
-        $this->validator ??= new DefaultConstraintValidator();
+        $this->validator = $this->validator ?? new DefaultConstraintValidator();
 
         return $this->validator;
     }

@@ -14,18 +14,53 @@ use Unleash\Client\Enum\ImpressionDataEventType;
 
 final class ImpressionDataEvent extends AbstractEvent implements JsonSerializable
 {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $eventType;
+    /**
+     * @readonly
+     * @var string
+     */
+    private $eventId;
+    /**
+     * @readonly
+     * @var \Unleash\Client\Configuration\UnleashConfiguration
+     */
+    private $configuration;
+    /**
+     * @readonly
+     * @var \Unleash\Client\Configuration\Context
+     */
+    private $context;
+    /**
+     * @readonly
+     * @var \Unleash\Client\DTO\Feature
+     */
+    private $feature;
+    /**
+     * @readonly
+     * @var \Unleash\Client\DTO\Variant|null
+     */
+    private $variant;
     public function __construct(
-        #[ExpectedValues(valuesFromClass: ImpressionDataEventType::class)]
-        private readonly string $eventType,
-        private readonly string $eventId,
-        private readonly UnleashConfiguration $configuration,
-        private readonly Context $context,
-        private readonly Feature $feature,
-        private readonly ?Variant $variant,
-    ) {
+        #[\JetBrains\PhpStorm\ExpectedValues(valuesFromClass: \Unleash\Client\Enum\ImpressionDataEventType::class)]
+        string $eventType,
+        string $eventId,
+        UnleashConfiguration $configuration,
+        Context $context,
+        Feature $feature,
+        ?Variant $variant
+    )
+    {
+        $this->eventType = $eventType;
+        $this->eventId = $eventId;
+        $this->configuration = $configuration;
+        $this->context = $context;
+        $this->feature = $feature;
+        $this->variant = $variant;
     }
-
-    #[ExpectedValues(valuesFromClass: ImpressionDataEventType::class)]
     public function getEventType(): string
     {
         return $this->eventType;
@@ -72,7 +107,7 @@ final class ImpressionDataEvent extends AbstractEvent implements JsonSerializabl
 
     public function getVariant(): ?string
     {
-        return $this->variant?->getName();
+        return ($nullsafeVariable1 = $this->variant) ? $nullsafeVariable1->getName() : null;
     }
 
     /**
@@ -93,7 +128,6 @@ final class ImpressionDataEvent extends AbstractEvent implements JsonSerializabl
      *     variant?: string
      * }
      */
-    #[Override]
     public function jsonSerialize(): array
     {
         $result = [
@@ -103,11 +137,9 @@ final class ImpressionDataEvent extends AbstractEvent implements JsonSerializabl
             'enabled' => $this->isEnabled(),
             'featureName' => $this->getFeatureName(),
         ];
-
         if ($this->getVariant() !== null) {
             $result['variant'] = $this->getVariant();
         }
-
         return $result;
     }
 }

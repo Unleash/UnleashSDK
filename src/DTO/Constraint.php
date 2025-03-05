@@ -9,7 +9,6 @@ interface Constraint
 {
     public function getContextName(): string;
 
-    #[ExpectedValues(valuesFromClass: ConstraintOperator::class)]
     public function getOperator(): string;
 
     /**

@@ -9,11 +9,12 @@ use Override;
  */
 final class VersionEqualsOperatorValidator extends AbstractVersionOperatorValidator
 {
-    #[Override]
-    protected function validate(string $currentValue, array|string $searchInValue): bool
+    /**
+     * @param mixed[]|string $searchInValue
+     */
+    protected function validate(string $currentValue, $searchInValue): bool
     {
         assert(is_string($searchInValue));
-
         return version_compare($currentValue, $searchInValue, 'eq');
     }
 }

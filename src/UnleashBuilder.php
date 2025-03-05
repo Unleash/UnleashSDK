@@ -58,72 +58,116 @@ use Unleash\Client\Strategy\UserIdStrategyHandler;
 use Unleash\Client\Variant\DefaultVariantHandler;
 use Unleash\Client\Variant\VariantHandler;
 
-#[Immutable]
 final class UnleashBuilder
 {
-    private DefaultImplementationLocator $defaultImplementationLocator;
-
-    private ?string $appUrl = null;
-
-    private ?string $instanceId = null;
-
-    private ?string $appName = null;
-
-    private ?ClientInterface $httpClient = null;
-
-    private ?RequestFactoryInterface $requestFactory = null;
-
-    private ?CacheInterface $cache = null;
-
-    private ?CacheInterface $staleCache = null;
-
-    private ?CacheInterface $metricsCache = null;
-
-    private ?int $cacheTtl = null;
-
-    private ?int $staleTtl = null;
-
-    private ?RegistrationService $registrationService = null;
-
-    private bool $autoregister = true;
-
-    private ?bool $metricsEnabled = null;
-
-    private ?int $metricsInterval = null;
-
-    private ?UnleashContextProvider $contextProvider = null;
-
-    private ?BootstrapProvider $bootstrapProvider = null;
-
-    private ?BootstrapHandler $bootstrapHandler = null;
-
-    private ?string $proxyKey = null;
-
-    private bool $fetchingEnabled = true;
-
+    /**
+     * @var \Unleash\Client\Helper\DefaultImplementationLocator
+     */
+    private $defaultImplementationLocator;
+    /**
+     * @var string|null
+     */
+    private $appUrl;
+    /**
+     * @var string|null
+     */
+    private $instanceId;
+    /**
+     * @var string|null
+     */
+    private $appName;
+    /**
+     * @var \Psr\Http\Client\ClientInterface|null
+     */
+    private $httpClient;
+    /**
+     * @var \Psr\Http\Message\RequestFactoryInterface|null
+     */
+    private $requestFactory;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $cache;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $staleCache;
+    /**
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    private $metricsCache;
+    /**
+     * @var int|null
+     */
+    private $cacheTtl;
+    /**
+     * @var int|null
+     */
+    private $staleTtl;
+    /**
+     * @var \Unleash\Client\Client\RegistrationService|null
+     */
+    private $registrationService;
+    /**
+     * @var bool
+     */
+    private $autoregister = true;
+    /**
+     * @var bool|null
+     */
+    private $metricsEnabled;
+    /**
+     * @var int|null
+     */
+    private $metricsInterval;
+    /**
+     * @var \Unleash\Client\ContextProvider\UnleashContextProvider|null
+     */
+    private $contextProvider;
+    /**
+     * @var \Unleash\Client\Bootstrap\BootstrapProvider|null
+     */
+    private $bootstrapProvider;
+    /**
+     * @var \Unleash\Client\Bootstrap\BootstrapHandler|null
+     */
+    private $bootstrapHandler;
+    /**
+     * @var string|null
+     */
+    private $proxyKey;
+    /**
+     * @var bool
+     */
+    private $fetchingEnabled = true;
     /**
      * @var array<string,string>
      */
-    private array $headers = [];
-
+    private $headers = [];
     /**
      * @var array<StrategyHandler>
      */
-    private array $strategies;
-
-    private ?EventDispatcherInterface $eventDispatcher = null;
-
+    private $strategies;
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|null
+     */
+    private $eventDispatcher;
     /**
      * @var array<EventSubscriberInterface>
      */
-    private array $eventSubscribers = [];
-
-    private ?MetricsHandler $metricsHandler = null;
-
-    private ?VariantHandler $variantHandler = null;
-
-    private ?MetricsBucketSerializer $metricsBucketSerializer = null;
-
+    private $eventSubscribers = [];
+    /**
+     * @var \Unleash\Client\Metrics\MetricsHandler|null
+     */
+    private $metricsHandler;
+    /**
+     * @var \Unleash\Client\Variant\VariantHandler|null
+     */
+    private $variantHandler;
+    /**
+     * @var \Unleash\Client\Metrics\MetricsBucketSerializer|null
+     */
+    private $metricsBucketSerializer;
     public function __construct()
     {
         $this->defaultImplementationLocator = new DefaultImplementationLocator();
@@ -143,158 +187,111 @@ final class UnleashBuilder
             new GradualRolloutRandomStrategyHandler($rolloutStrategyHandler),
         ];
     }
-
     public static function create(): self
     {
         return new self();
     }
-
     public static function createForGitlab(): self
     {
         return self::create()
             ->withMetricsEnabled(false)
             ->withAutomaticRegistrationEnabled(false);
     }
-
-    #[Pure]
     public function withAppUrl(string $appUrl): self
     {
         return $this->with('appUrl', $appUrl);
     }
-
-    #[Pure]
     public function withInstanceId(string $instanceId): self
     {
         return $this->with('instanceId', $instanceId);
     }
-
-    #[Pure]
     public function withAppName(string $appName): self
     {
         return $this->with('appName', $appName);
     }
-
-    #[Pure]
     public function withGitlabEnvironment(string $environment): self
     {
         return $this->withAppName($environment);
     }
-
-    #[Pure]
     public function withHttpClient(ClientInterface $client): self
     {
         return $this->with('httpClient', $client);
     }
-
-    #[Pure]
     public function withRequestFactory(RequestFactoryInterface $requestFactory): self
     {
         return $this->with('requestFactory', $requestFactory);
     }
-
-    #[Pure]
     public function withStrategies(StrategyHandler ...$strategies): self
     {
         return $this->with('strategies', $strategies);
     }
-
-    #[Pure]
     public function withStrategy(StrategyHandler $strategy): self
     {
         return $this->withStrategies(...array_merge($this->strategies, [$strategy]));
     }
-
-    #[Pure]
     public function withCacheHandler(?CacheInterface $cache, ?int $timeToLive = null): self
     {
         $result = $this->with('cache', $cache);
         if ($timeToLive !== null) {
             $result = $result->withCacheTimeToLive($timeToLive);
         }
-
         return $result;
     }
-
-    #[Pure]
     public function withStaleCacheHandler(?CacheInterface $cache): self
     {
         return $this->with('staleCache', $cache);
     }
-
-    #[Pure]
     public function withMetricsCacheHandler(?CacheInterface $cache): self
     {
         return $this->with('metricsCache', $cache);
     }
-
-    #[Pure]
     public function withCacheTimeToLive(int $timeToLive): self
     {
         return $this->with('cacheTtl', $timeToLive);
     }
-
-    #[Pure]
     public function withHeader(string $header, string $value): self
     {
         return $this->with('headers', array_merge($this->headers, [$header => $value]));
     }
-
     /**
      * @param array<string, string> $headers
      */
-    #[Pure]
     public function withHeaders(array $headers): self
     {
         return $this->with('headers', $headers);
     }
-
-    #[Pure]
     public function withRegistrationService(RegistrationService $registrationService): self
     {
         return $this->with('registrationService', $registrationService);
     }
-
-    #[Pure]
     public function withAutomaticRegistrationEnabled(bool $enabled): self
     {
         return $this->with('autoregister', $enabled);
     }
-
-    #[Pure]
     public function withMetricsEnabled(bool $enabled): self
     {
         return $this->with('metricsEnabled', $enabled);
     }
-
-    #[Pure]
     public function withMetricsInterval(int $milliseconds): self
     {
         return $this->with('metricsInterval', $milliseconds);
     }
-
-    #[Pure]
     public function withContextProvider(?UnleashContextProvider $contextProvider): self
     {
         return $this->with('contextProvider', $contextProvider);
     }
-
-    #[Pure]
     public function withBootstrapHandler(?BootstrapHandler $handler): self
     {
         return $this->with('bootstrapHandler', $handler);
     }
-
-    #[Pure]
     public function withBootstrapProvider(?BootstrapProvider $provider): self
     {
         return $this->with('bootstrapProvider', $provider);
     }
-
     /**
      * @param array<mixed>|Traversable<mixed>|JsonSerializable|null|string $bootstrap
      */
-    #[Pure]
-    public function withBootstrap(array|Traversable|JsonSerializable|null|string $bootstrap): self
+    public function withBootstrap($bootstrap): self
     {
         if ($bootstrap === null) {
             $provider = new EmptyBootstrapProvider();
@@ -303,40 +300,32 @@ final class UnleashBuilder
         } else {
             $provider = new JsonSerializableBootstrapProvider($bootstrap);
         }
-
         return $this->withBootstrapProvider($provider);
     }
-
-    #[Pure]
-    public function withBootstrapFile(string|SplFileInfo|null $file): self
+    /**
+     * @param string|\SplFileInfo|null $file
+     */
+    public function withBootstrapFile($file): self
     {
         if ($file === null) {
             $provider = new EmptyBootstrapProvider();
         } else {
             $provider = new FileBootstrapProvider($file);
         }
-
         return $this->withBootstrapProvider($provider);
     }
-
-    #[Pure]
     public function withBootstrapUrl(?string $url): self
     {
         return $this->withBootstrapFile($url);
     }
-
-    #[Pure]
     public function withFetchingEnabled(bool $enabled): self
     {
         return $this->with('fetchingEnabled', $enabled);
     }
-
-    #[Pure]
     public function withEventDispatcher(?EventDispatcherInterface $eventDispatcher): self
     {
         return $this->with('eventDispatcher', $eventDispatcher);
     }
-
     public function withEventSubscriber(EventSubscriberInterface $eventSubscriber): self
     {
         $subscribers = $this->eventSubscribers;
@@ -344,44 +333,32 @@ final class UnleashBuilder
 
         return $this->with('eventSubscribers', $subscribers);
     }
-
-    #[Pure]
     public function withStaleTtl(?int $ttl): self
     {
         return $this->with('staleTtl', $ttl);
     }
-
-    #[Pure]
     public function withMetricsHandler(?MetricsHandler $metricsHandler): self
     {
         return $this->with('metricsHandler', $metricsHandler);
     }
-
-    #[Pure]
     public function withVariantHandler(?VariantHandler $variantHandler): self
     {
         return $this->with('variantHandler', $variantHandler);
     }
-
-    #[Pure]
     public function withProxy(?string $proxyKey): self
     {
         return $this->with('proxyKey', $proxyKey);
     }
-
-    #[Pure]
     public function withMetricsBucketSerializer(?MetricsBucketSerializer $metricsBucketSerializer): self
     {
         return $this->with('metricsBucketSerializer', $metricsBucketSerializer);
     }
-
     public function buildRepository(): UnleashRepository
     {
         $dependencyContainer = $this->initializeContainerWithConfiguration();
 
         return $this->createRepository($dependencyContainer);
     }
-
     public function build(): Unleash
     {
         $dependencyContainer = $this->initializeContainerWithConfiguration();
@@ -390,20 +367,7 @@ final class UnleashBuilder
         assert($dependencyContainer->getConfiguration() !== null);
         $metricsSender = new DefaultMetricsSender($dependencyContainer->getHttpClient(), $dependencyContainer->getRequestFactory(), $dependencyContainer->getConfiguration());
 
-        $dependencyContainer = $this->createContainer(
-            cache: $dependencyContainer->getCache(),
-            staleCache: $dependencyContainer->getStaleCache(),
-            httpClient: $dependencyContainer->getHttpClient(),
-            requestFactory: $dependencyContainer->getRequestFactory(),
-            contextProvider: $dependencyContainer->getContextProvider(),
-            bootstrapHandler: $dependencyContainer->getBootstrapHandler(),
-            bootstrapProvider: $dependencyContainer->getBootstrapProvider(),
-            eventDispatcher: $dependencyContainer->getEventDispatcher(),
-            metricsBucketSerializer: $dependencyContainer->getMetricsBucketSerializer(),
-            metricsCache: $dependencyContainer->getMetricsCache(),
-            metricsSender: $metricsSender,
-            configuration: $dependencyContainer->getConfiguration(),
-        );
+        $dependencyContainer = $this->createContainer($dependencyContainer->getCache(), $dependencyContainer->getStaleCache(), $dependencyContainer->getHttpClient(), $dependencyContainer->getRequestFactory(), $dependencyContainer->getContextProvider(), $dependencyContainer->getBootstrapHandler(), $dependencyContainer->getBootstrapProvider(), $dependencyContainer->getEventDispatcher(), $dependencyContainer->getMetricsBucketSerializer(), $dependencyContainer->getMetricsCache(), $metricsSender, $dependencyContainer->getConfiguration());
 
         assert($dependencyContainer->getConfiguration() !== null);
         $registrationService = $this->registrationService ?? new DefaultRegistrationService($dependencyContainer->getHttpClient(), $dependencyContainer->getRequestFactory(), $dependencyContainer->getConfiguration());
@@ -423,28 +387,13 @@ final class UnleashBuilder
         if ($this->proxyKey !== null) {
             $dependencyContainer->getConfiguration()->setProxyKey($this->proxyKey);
             $dependencyContainer->getConfiguration()->setHeaders(array_merge($this->headers, ['Authorization' => $this->proxyKey]));
-            $proxyRepository = new DefaultUnleashProxyRepository(
-                $dependencyContainer->getConfiguration(),
-                $dependencyContainer->getHttpClient(),
-                $dependencyContainer->getRequestFactory(),
-            );
+            $proxyRepository = new DefaultUnleashProxyRepository($dependencyContainer->getConfiguration(), $dependencyContainer->getHttpClient(), $dependencyContainer->getRequestFactory());
 
-            return new DefaultProxyUnleash(
-                $proxyRepository,
-                $metricsHandler,
-            );
+            return new DefaultProxyUnleash($proxyRepository, $metricsHandler);
         }
 
-        return new DefaultUnleash(
-            $this->strategies,
-            $repository,
-            $registrationService,
-            $dependencyContainer->getConfiguration(),
-            $metricsHandler,
-            $variantHandler,
-        );
+        return new DefaultUnleash($this->strategies, $repository, $registrationService, $dependencyContainer->getConfiguration(), $metricsHandler, $variantHandler);
     }
-
     /**
      * @return array<int, string>
      */
@@ -456,9 +405,9 @@ final class UnleashBuilder
         $appName = $this->appName;
 
         if (!$this->fetchingEnabled) {
-            $appUrl ??= 'http://127.0.0.1';
-            $instanceId ??= 'dev';
-            $appName ??= 'dev';
+            $appUrl = $appUrl ?? 'http://127.0.0.1';
+            $instanceId = $instanceId ?? 'dev';
+            $appName = $appName ?? 'dev';
         }
 
         if ($appUrl === null) {
@@ -475,38 +424,10 @@ final class UnleashBuilder
 
         return [$appUrl, $instanceId, $appName];
     }
-
-    private function createContainer(
-        CacheInterface $cache,
-        CacheInterface $staleCache,
-        ClientInterface $httpClient,
-        RequestFactoryInterface $requestFactory,
-        UnleashContextProvider $contextProvider,
-        BootstrapHandler $bootstrapHandler,
-        BootstrapProvider $bootstrapProvider,
-        EventDispatcherInterface $eventDispatcher,
-        MetricsBucketSerializer $metricsBucketSerializer,
-        CacheInterface $metricsCache,
-        ?MetricsSender $metricsSender = null,
-        ?UnleashConfiguration $configuration = null,
-    ): UnleashBuilderContainer {
-        return new UnleashBuilderContainer(
-            cache: $cache,
-            staleCache: $staleCache,
-            httpClient: $httpClient,
-            metricsSender: $metricsSender,
-            metricsCache: $metricsCache,
-            requestFactory: $requestFactory,
-            stickinessCalculator: new MurmurHashCalculator(),
-            configuration: $configuration,
-            contextProvider: $contextProvider,
-            bootstrapHandler: $bootstrapHandler,
-            bootstrapProvider: $bootstrapProvider,
-            eventDispatcher: $eventDispatcher,
-            metricsBucketSerializer: $metricsBucketSerializer,
-        );
+    private function createContainer(CacheInterface $cache, CacheInterface $staleCache, ClientInterface $httpClient, RequestFactoryInterface $requestFactory, UnleashContextProvider $contextProvider, BootstrapHandler $bootstrapHandler, BootstrapProvider $bootstrapProvider, EventDispatcherInterface $eventDispatcher, MetricsBucketSerializer $metricsBucketSerializer, CacheInterface $metricsCache, ?MetricsSender $metricsSender = null, ?UnleashConfiguration $configuration = null): UnleashBuilderContainer
+    {
+        return new UnleashBuilderContainer($cache, $staleCache, $httpClient, $metricsSender, $metricsCache, $requestFactory, new MurmurHashCalculator(), $configuration, $contextProvider, $bootstrapHandler, $bootstrapProvider, $eventDispatcher, $metricsBucketSerializer);
     }
-
     private function initializeContainerWithConfiguration(): UnleashBuilderContainer
     {
         [$appUrl, $instanceId, $appName] = $this->initializeBasicAttributes();
@@ -559,16 +480,16 @@ final class UnleashBuilder
         $metricsBucketSerializer = $this->metricsBucketSerializer ?? new DefaultMetricsBucketSerializer();
 
         $dependencyContainer = $this->createContainer(
-            cache: $cache,
-            staleCache: $staleCache,
-            httpClient: $httpClient,
-            requestFactory: $requestFactory,
-            contextProvider: $contextProvider,
-            bootstrapHandler: $bootstrapHandler,
-            bootstrapProvider: $bootstrapProvider,
-            eventDispatcher: $eventDispatcher,
-            metricsBucketSerializer: $metricsBucketSerializer,
-            metricsCache: $metricsCache
+            $cache,
+            $staleCache,
+            $httpClient,
+            $requestFactory,
+            $contextProvider,
+            $bootstrapHandler,
+            $bootstrapProvider,
+            $eventDispatcher,
+            $metricsBucketSerializer,
+            $metricsCache
         );
 
         // initialize services
@@ -600,29 +521,18 @@ final class UnleashBuilder
             ->setEventDispatcher($dependencyContainer->getEventDispatcher())
             ->setMetricsBucketSerializer($dependencyContainer->getMetricsBucketSerializer());
 
-        return $this->createContainer(
-            cache: $cache,
-            staleCache: $staleCache,
-            httpClient: $httpClient,
-            requestFactory: $requestFactory,
-            contextProvider: $contextProvider,
-            bootstrapHandler: $bootstrapHandler,
-            bootstrapProvider: $bootstrapProvider,
-            eventDispatcher: $eventDispatcher,
-            metricsBucketSerializer: $metricsBucketSerializer,
-            metricsCache: $metricsCache,
-            configuration: $configuration,
-        );
+        return $this->createContainer($cache, $staleCache, $httpClient, $requestFactory, $contextProvider, $bootstrapHandler, $bootstrapProvider, $eventDispatcher, $metricsBucketSerializer, $metricsCache, null, $configuration);
     }
-
-    private function with(string $property, mixed $value): self
+    /**
+     * @param mixed $value
+     */
+    private function with(string $property, $value): self
     {
         $copy = clone $this;
         $copy->{$property} = $value;
 
         return $copy;
     }
-
     private function initializeServices(object $target, UnleashBuilderContainer $container): void
     {
         if ($target instanceof CacheAware) {
@@ -632,10 +542,7 @@ final class UnleashBuilder
             if ($configuration = $container->getConfiguration()) {
                 $target->setConfiguration($configuration);
             } else {
-                throw new CyclicDependencyException(sprintf(
-                    "A dependency '%s' is tagged as ConfigurationAware but that would cause a cyclic dependency as it needs to be part of Configuration",
-                    $target::class,
-                ));
+                throw new CyclicDependencyException(sprintf("A dependency '%s' is tagged as ConfigurationAware but that would cause a cyclic dependency as it needs to be part of Configuration", get_class($target)));
             }
         }
         if ($target instanceof HttpClientAware) {
@@ -645,10 +552,7 @@ final class UnleashBuilder
             if ($sender = $container->getMetricsSender()) {
                 $target->setMetricsSender($sender);
             } else {
-                throw new CyclicDependencyException(sprintf(
-                    "A dependency '%s' is tagged as MetricsSenderAware but MetricsSender is not available for this type of dependency",
-                    $target::class,
-                ));
+                throw new CyclicDependencyException(sprintf("A dependency '%s' is tagged as MetricsSenderAware but MetricsSender is not available for this type of dependency", get_class($target)));
             }
         }
         if ($target instanceof RequestFactoryAware) {
@@ -661,7 +565,6 @@ final class UnleashBuilder
             $target->setStickinessCalculator($container->getStickinessCalculator());
         }
     }
-
     /**
      * @param UnleashBuilderContainer $dependencyContainer
      *

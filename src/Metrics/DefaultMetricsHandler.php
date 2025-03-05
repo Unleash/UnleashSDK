@@ -9,21 +9,29 @@ use Unleash\Client\DTO\Feature;
 use Unleash\Client\DTO\Variant;
 use Unleash\Client\Enum\CacheKey;
 
-final readonly class DefaultMetricsHandler implements MetricsHandler
+final class DefaultMetricsHandler implements MetricsHandler
 {
-    public function __construct(
-        private MetricsSender $metricsSender,
-        private UnleashConfiguration $configuration
-    ) {
+    /**
+     * @readonly
+     * @var \Unleash\Client\Metrics\MetricsSender
+     */
+    private $metricsSender;
+    /**
+     * @readonly
+     * @var \Unleash\Client\Configuration\UnleashConfiguration
+     */
+    private $configuration;
+    public function __construct(MetricsSender $metricsSender, UnleashConfiguration $configuration)
+    {
+        $this->metricsSender = $metricsSender;
+        $this->configuration = $configuration;
     }
 
-    #[Override]
     public function handleMetrics(Feature $feature, bool $successful, ?Variant $variant = null): void
     {
         if (!$this->configuration->isMetricsEnabled()) {
             return;
         }
-
         $bucket = $this->getOrCreateBucket();
         $bucket->addToggle(new MetricsBucketToggle($feature, $successful, $variant));
         if ($this->shouldSend($bucket)) {
@@ -46,7 +54,7 @@ final readonly class DefaultMetricsHandler implements MetricsHandler
             assert($bucket instanceof MetricsBucket || $bucket === null);
         }
 
-        $bucket ??= new MetricsBucket(new DateTimeImmutable());
+        $bucket = $bucket ?? new MetricsBucket(new DateTimeImmutable());
 
         return $bucket;
     }
@@ -56,7 +64,7 @@ final readonly class DefaultMetricsHandler implements MetricsHandler
         $bucketStartDate = $bucket->getStartDate();
         $nowMilliseconds = (int) (microtime(true) * 1000);
         $startDateMilliseconds = (int) (
-            ($bucketStartDate->getTimestamp() + (int) $bucketStartDate->format('v') / 1000) * 1_000
+            ($bucketStartDate->getTimestamp() + (int) $bucketStartDate->format('v') / 1000) * 1000
         );
         $diff = $nowMilliseconds - $startDateMilliseconds;
 
