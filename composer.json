@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "ext-json": "*",
         "psr/http-client": "^1.0",
         "psr/http-client-implementation": "^1.0",

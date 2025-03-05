@@ -12,7 +12,10 @@ use Unleash\Client\Stickiness\StickinessCalculator;
 
 final readonly class DefaultVariantHandler implements VariantHandler
 {
-    private const int VARIANT_HASH_SEED = 86028157;
+    /**
+     * @var int
+     */
+    private const VARIANT_HASH_SEED = 86028157;
 
     public function __construct(
         private StickinessCalculator $stickinessCalculator,
