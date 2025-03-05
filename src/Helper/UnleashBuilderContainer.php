@@ -17,25 +17,76 @@ use Unleash\Client\Stickiness\StickinessCalculator;
 /**
  * @internal
  */
-final readonly class UnleashBuilderContainer
+final class UnleashBuilderContainer
 {
-    public function __construct(
-        private CacheInterface $cache,
-        private CacheInterface $staleCache,
-        private ClientInterface $httpClient,
-        private ?MetricsSender $metricsSender,
-        private CacheInterface $metricsCache,
-        private RequestFactoryInterface $requestFactory,
-        private StickinessCalculator $stickinessCalculator,
-        private ?UnleashConfiguration $configuration,
-        private UnleashContextProvider $contextProvider,
-        private BootstrapHandler $bootstrapHandler,
-        private BootstrapProvider $bootstrapProvider,
-        private EventDispatcherInterface $eventDispatcher,
-        private MetricsBucketSerializer $metricsBucketSerializer,
-    ) {
+    /**
+     * @readonly
+     */
+    private CacheInterface $cache;
+    /**
+     * @readonly
+     */
+    private CacheInterface $staleCache;
+    /**
+     * @readonly
+     */
+    private ClientInterface $httpClient;
+    /**
+     * @readonly
+     */
+    private ?MetricsSender $metricsSender;
+    /**
+     * @readonly
+     */
+    private CacheInterface $metricsCache;
+    /**
+     * @readonly
+     */
+    private RequestFactoryInterface $requestFactory;
+    /**
+     * @readonly
+     */
+    private StickinessCalculator $stickinessCalculator;
+    /**
+     * @readonly
+     */
+    private ?UnleashConfiguration $configuration;
+    /**
+     * @readonly
+     */
+    private UnleashContextProvider $contextProvider;
+    /**
+     * @readonly
+     */
+    private BootstrapHandler $bootstrapHandler;
+    /**
+     * @readonly
+     */
+    private BootstrapProvider $bootstrapProvider;
+    /**
+     * @readonly
+     */
+    private EventDispatcherInterface $eventDispatcher;
+    /**
+     * @readonly
+     */
+    private MetricsBucketSerializer $metricsBucketSerializer;
+    public function __construct(CacheInterface $cache, CacheInterface $staleCache, ClientInterface $httpClient, ?MetricsSender $metricsSender, CacheInterface $metricsCache, RequestFactoryInterface $requestFactory, StickinessCalculator $stickinessCalculator, ?UnleashConfiguration $configuration, UnleashContextProvider $contextProvider, BootstrapHandler $bootstrapHandler, BootstrapProvider $bootstrapProvider, EventDispatcherInterface $eventDispatcher, MetricsBucketSerializer $metricsBucketSerializer)
+    {
+        $this->cache = $cache;
+        $this->staleCache = $staleCache;
+        $this->httpClient = $httpClient;
+        $this->metricsSender = $metricsSender;
+        $this->metricsCache = $metricsCache;
+        $this->requestFactory = $requestFactory;
+        $this->stickinessCalculator = $stickinessCalculator;
+        $this->configuration = $configuration;
+        $this->contextProvider = $contextProvider;
+        $this->bootstrapHandler = $bootstrapHandler;
+        $this->bootstrapProvider = $bootstrapProvider;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->metricsBucketSerializer = $metricsBucketSerializer;
     }
-
     public function getCache(): CacheInterface
     {
         return $this->cache;

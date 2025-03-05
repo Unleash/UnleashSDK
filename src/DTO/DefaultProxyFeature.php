@@ -6,14 +6,26 @@ use JsonSerializable;
 use Override;
 use Unleash\Client\Enum\Stickiness;
 
-final readonly class DefaultProxyFeature implements ProxyFeature, JsonSerializable
+final class DefaultProxyFeature implements ProxyFeature, JsonSerializable
 {
+    /**
+     * @readonly
+     */
     private string $name;
 
+    /**
+     * @readonly
+     */
     private bool $enabled;
 
+    /**
+     * @readonly
+     */
     private Variant $variant;
 
+    /**
+     * @readonly
+     */
     private bool $impressionData;
 
     /**
@@ -56,25 +68,21 @@ final readonly class DefaultProxyFeature implements ProxyFeature, JsonSerializab
         $this->variant = new DefaultVariant($response['variant']['name'], $response['variant']['enabled'], 0, Stickiness::DEFAULT, $payload);
     }
 
-    #[Override]
     public function getName(): string
     {
         return $this->name;
     }
 
-    #[Override]
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
-    #[Override]
     public function getVariant(): Variant
     {
         return $this->variant;
     }
 
-    #[Override]
     public function hasImpressionData(): bool
     {
         return $this->impressionData;
@@ -83,7 +91,6 @@ final readonly class DefaultProxyFeature implements ProxyFeature, JsonSerializab
     /**
      * @return array<mixed>
      */
-    #[Override]
     public function jsonSerialize(): array
     {
         return [

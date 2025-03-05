@@ -25,23 +25,19 @@ use Unleash\Client\Exception\OperatorValidatorException;
 
 final class DefaultConstraintValidator implements ConstraintValidator
 {
-    #[Override]
     public function validateConstraint(Constraint $constraint, Context $context): bool
     {
         $field = $constraint->getContextName();
         $currentValue = $context->findContextValue($field) ?? '';
-
         $callback = $this->getValidationCallback($constraint->getOperator());
         $valueToPass = method_exists($constraint, 'getSingleValue') && $constraint->getSingleValue() !== null
             ? $constraint->getSingleValue()
             : $constraint->getValues();
-
         $isCaseInsensitive = method_exists($constraint, 'isCaseInsensitive') && $constraint->isCaseInsensitive();
         if ($isCaseInsensitive) {
             $currentValue = $this->makeCaseInsensitive($currentValue);
             $valueToPass = $valueToPass === null ? null : $this->makeCaseInsensitive($valueToPass);
         }
-
         // Catch any possible validator exceptions to avoid inverting result that failed due to
         // wrong data being passed to true.
         try {
@@ -51,23 +47,22 @@ final class DefaultConstraintValidator implements ConstraintValidator
             if ($isInverted) {
                 $result = !$result;
             }
-        } catch (OperatorValidatorException) {
+        } catch (OperatorValidatorException $exception) {
             $result = false;
         }
-
         return $result;
     }
 
     /**
      * @template T of string|array<mixed>
      *
-     * @param T $value
+     * @param string|mixed[] $value
      *
      * @return T
      *
      * @noinspection PhpDocSignatureInspection
      */
-    private function makeCaseInsensitive(string|array $value): string|array
+    private function makeCaseInsensitive($value)
     {
         if (is_string($value)) {
             return mb_strtolower($value);
@@ -84,29 +79,39 @@ final class DefaultConstraintValidator implements ConstraintValidator
 
     private function getValidationCallback(string $operator): callable
     {
-        return match ($operator) {
-            // list
-            ConstraintOperator::IN_LIST => new InListOperatorValidator(),
-            ConstraintOperator::NOT_IN_LIST => new NotInListOperatorValidator(),
-            // strings
-            ConstraintOperator::STRING_STARTS_WITH => new StringStartsWithOperatorValidator(),
-            ConstraintOperator::STRING_ENDS_WITH => new StringEndsWithOperatorValidator(),
-            ConstraintOperator::STRING_CONTAINS => new StringContainsOperatorValidator(),
-            // numbers
-            ConstraintOperator::NUMBER_EQUALS => new NumberEqualsOperatorValidator(),
-            ConstraintOperator::NUMBER_GREATER_THAN => new NumberGreaterThanOperatorValidator(),
-            ConstraintOperator::NUMBER_GREATER_THAN_OR_EQUALS => new NumberGreaterThanOrEqualsOperatorValidator(),
-            ConstraintOperator::NUMBER_LOWER_THAN => new NumberLowerThanOperatorValidator(),
-            ConstraintOperator::NUMBER_LOWER_THAN_OR_EQUALS => new NumberLowerThanOrEqualsOperatorValidator(),
-            // date
-            ConstraintOperator::DATE_AFTER => new DateAfterOperatorValidator(),
-            ConstraintOperator::DATE_BEFORE => new DateBeforeOperatorValidator(),
-            // version
-            ConstraintOperator::VERSION_EQUALS => new VersionEqualsOperatorValidator(),
-            ConstraintOperator::VERSION_GREATER_THAN => new VersionGreaterThanOperatorValidator(),
-            ConstraintOperator::VERSION_LOWER_THAN => new VersionLowerThanOperatorValidator(),
-
-            default => fn () => false,
-        };
+        switch ($operator) {
+            case ConstraintOperator::IN_LIST:
+                return new InListOperatorValidator();
+            case ConstraintOperator::NOT_IN_LIST:
+                return new NotInListOperatorValidator();
+            case ConstraintOperator::STRING_STARTS_WITH:
+                return new StringStartsWithOperatorValidator();
+            case ConstraintOperator::STRING_ENDS_WITH:
+                return new StringEndsWithOperatorValidator();
+            case ConstraintOperator::STRING_CONTAINS:
+                return new StringContainsOperatorValidator();
+            case ConstraintOperator::NUMBER_EQUALS:
+                return new NumberEqualsOperatorValidator();
+            case ConstraintOperator::NUMBER_GREATER_THAN:
+                return new NumberGreaterThanOperatorValidator();
+            case ConstraintOperator::NUMBER_GREATER_THAN_OR_EQUALS:
+                return new NumberGreaterThanOrEqualsOperatorValidator();
+            case ConstraintOperator::NUMBER_LOWER_THAN:
+                return new NumberLowerThanOperatorValidator();
+            case ConstraintOperator::NUMBER_LOWER_THAN_OR_EQUALS:
+                return new NumberLowerThanOrEqualsOperatorValidator();
+            case ConstraintOperator::DATE_AFTER:
+                return new DateAfterOperatorValidator();
+            case ConstraintOperator::DATE_BEFORE:
+                return new DateBeforeOperatorValidator();
+            case ConstraintOperator::VERSION_EQUALS:
+                return new VersionEqualsOperatorValidator();
+            case ConstraintOperator::VERSION_GREATER_THAN:
+                return new VersionGreaterThanOperatorValidator();
+            case ConstraintOperator::VERSION_LOWER_THAN:
+                return new VersionLowerThanOperatorValidator();
+            default:
+                return fn () => false;
+        }
     }
 }

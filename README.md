@@ -1,3 +1,4 @@
+# This branch is auto generated
 [![Tests](https://github.com/Unleash/unleash-client-php/actions/workflows/tests.yaml/badge.svg)](https://github.com/Unleash/unleash-client-php/actions/workflows/tests.yaml)
 [![Tests (8.x)](https://github.com/Unleash/unleash-client-php/actions/workflows/tests-8.x.yaml/badge.svg)](https://github.com/Unleash/unleash-client-php/actions/workflows/tests-8.x.yaml)
 [![Tests (7.x)](https://github.com/Unleash/unleash-client-php/actions/workflows/tests-7.x.yaml/badge.svg)](https://github.com/Unleash/unleash-client-php/actions/workflows/tests-7.x.yaml)

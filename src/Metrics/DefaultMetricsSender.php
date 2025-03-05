@@ -10,22 +10,31 @@ use Unleash\Client\Configuration\UnleashConfiguration;
 use Unleash\Client\Helper\StringStream;
 use Unleash\Client\Unleash;
 
-final readonly class DefaultMetricsSender implements MetricsSender
+final class DefaultMetricsSender implements MetricsSender
 {
-    public function __construct(
-        private ClientInterface $httpClient,
-        private RequestFactoryInterface $requestFactory,
-        private UnleashConfiguration $configuration,
-    ) {
+    /**
+     * @readonly
+     */
+    private ClientInterface $httpClient;
+    /**
+     * @readonly
+     */
+    private RequestFactoryInterface $requestFactory;
+    /**
+     * @readonly
+     */
+    private UnleashConfiguration $configuration;
+    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, UnleashConfiguration $configuration)
+    {
+        $this->httpClient = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->configuration = $configuration;
     }
-
-    #[Override]
     public function sendMetrics(MetricsBucket $bucket): void
     {
         if (!$this->configuration->isMetricsEnabled() || !$this->configuration->isFetchingEnabled()) {
             return;
         }
-
         $request = $this->requestFactory
             ->createRequest('POST', $this->configuration->getMetricsUrl())
             ->withHeader('Content-Type', 'application/json')
@@ -42,10 +51,9 @@ final readonly class DefaultMetricsSender implements MetricsSender
         foreach ($this->configuration->getHeaders() as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
-
         try {
             $this->httpClient->sendRequest($request);
-        } catch (ClientExceptionInterface) {
+        } catch (ClientExceptionInterface $exception) {
             // ignore the error
         }
     }

@@ -7,44 +7,95 @@ use JetBrains\PhpStorm\Deprecated;
 final class ConstraintOperator
 {
     // legacy
+    /**
+     * @var string
+     */
     #[Deprecated('Please use IN_LIST constant')]
-    public const string IN = self::IN_LIST;
+    public const IN = self::IN_LIST;
 
+    /**
+     * @var string
+     */
     #[Deprecated('Please use NOT_IN_LIST constant')]
-    public const string NOT_IN = self::NOT_IN_LIST;
+    public const NOT_IN = self::NOT_IN_LIST;
 
     // list
-    public const string IN_LIST = 'IN';
+    /**
+     * @var string
+     */
+    public const IN_LIST = 'IN';
 
-    public const string NOT_IN_LIST = 'NOT_IN';
+    /**
+     * @var string
+     */
+    public const NOT_IN_LIST = 'NOT_IN';
 
     // string
-    public const string STRING_STARTS_WITH = 'STR_STARTS_WITH';
+    /**
+     * @var string
+     */
+    public const STRING_STARTS_WITH = 'STR_STARTS_WITH';
 
-    public const string STRING_ENDS_WITH = 'STR_ENDS_WITH';
+    /**
+     * @var string
+     */
+    public const STRING_ENDS_WITH = 'STR_ENDS_WITH';
 
-    public const string STRING_CONTAINS = 'STR_CONTAINS';
+    /**
+     * @var string
+     */
+    public const STRING_CONTAINS = 'STR_CONTAINS';
 
     // number
-    public const string NUMBER_EQUALS = 'NUM_EQ';
+    /**
+     * @var string
+     */
+    public const NUMBER_EQUALS = 'NUM_EQ';
 
-    public const string NUMBER_GREATER_THAN = 'NUM_GT';
+    /**
+     * @var string
+     */
+    public const NUMBER_GREATER_THAN = 'NUM_GT';
 
-    public const string NUMBER_GREATER_THAN_OR_EQUALS = 'NUM_GTE';
+    /**
+     * @var string
+     */
+    public const NUMBER_GREATER_THAN_OR_EQUALS = 'NUM_GTE';
 
-    public const string NUMBER_LOWER_THAN = 'NUM_LT';
+    /**
+     * @var string
+     */
+    public const NUMBER_LOWER_THAN = 'NUM_LT';
 
-    public const string NUMBER_LOWER_THAN_OR_EQUALS = 'NUM_LTE';
+    /**
+     * @var string
+     */
+    public const NUMBER_LOWER_THAN_OR_EQUALS = 'NUM_LTE';
 
     // date
-    public const string DATE_AFTER = 'DATE_AFTER';
+    /**
+     * @var string
+     */
+    public const DATE_AFTER = 'DATE_AFTER';
 
-    public const string DATE_BEFORE = 'DATE_BEFORE';
+    /**
+     * @var string
+     */
+    public const DATE_BEFORE = 'DATE_BEFORE';
 
     // versions
-    public const string VERSION_EQUALS = 'SEMVER_EQ';
+    /**
+     * @var string
+     */
+    public const VERSION_EQUALS = 'SEMVER_EQ';
 
-    public const string VERSION_GREATER_THAN = 'SEMVER_GT';
+    /**
+     * @var string
+     */
+    public const VERSION_GREATER_THAN = 'SEMVER_GT';
 
-    public const string VERSION_LOWER_THAN = 'SEMVER_LT';
+    /**
+     * @var string
+     */
+    public const VERSION_LOWER_THAN = 'SEMVER_LT';
 }

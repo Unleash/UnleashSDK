@@ -14,14 +14,19 @@ use Override;
 final class MetricsBucket implements JsonSerializable
 {
     /**
+     * @readonly
+     */
+    private DateTimeInterface $startDate;
+    private ?DateTimeInterface $endDate = null;
+    /**
      * @var array<MetricsBucketToggle>
      */
     private array $toggles = [];
 
-    public function __construct(
-        private readonly DateTimeInterface $startDate,
-        private ?DateTimeInterface $endDate = null,
-    ) {
+    public function __construct(DateTimeInterface $startDate, ?DateTimeInterface $endDate = null)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
     public function addToggle(MetricsBucketToggle $toggle): self
@@ -59,16 +64,12 @@ final class MetricsBucket implements JsonSerializable
     /**
      * @return array<string,mixed>
      */
-    #[ArrayShape(['start' => 'string', 'stop' => 'string', 'toggles' => 'array'])]
-    #[Override]
     public function jsonSerialize(): array
     {
         $togglesArray = [];
-
         if ($this->endDate === null) {
             throw new LogicException('Cannot serialize incomplete bucket');
         }
-
         foreach ($this->toggles as $toggle) {
             $featureName = $toggle->getFeature()->getName();
             if (!isset($togglesArray[$featureName])) {
@@ -87,7 +88,6 @@ final class MetricsBucket implements JsonSerializable
                 ++$togglesArray[$featureName]['variants'][$variant->getName()];
             }
         }
-
         return [
             'start' => $this->startDate->format('c'),
             'stop' => $this->endDate->format('c'),

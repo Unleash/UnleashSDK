@@ -8,14 +8,21 @@ use Unleash\Client\DTO\Feature;
 final class FeatureToggleDisabledEvent extends AbstractEvent
 {
     /**
+     * @readonly
+     */
+    private Feature $feature;
+    /**
+     * @readonly
+     */
+    private Context $context;
+    /**
      * @internal
      */
-    public function __construct(
-        private readonly Feature $feature,
-        private readonly Context $context,
-    ) {
+    public function __construct(Feature $feature, Context $context)
+    {
+        $this->feature = $feature;
+        $this->context = $context;
     }
-
     public function getFeature(): Feature
     {
         return $this->feature;

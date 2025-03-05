@@ -10,15 +10,20 @@ use Unleash\Client\ConstraintValidator\Operator\AbstractOperatorValidator;
  */
 abstract class AbstractNumberOperatorValidator extends AbstractOperatorValidator
 {
-    #[Override]
-    protected function acceptsValues(array|string $values): bool
+    /**
+     * @param mixed[]|string $values
+     */
+    protected function acceptsValues($values): bool
     {
         return is_string($values) && is_numeric($values);
     }
 
-    protected function convert(string $number): int|float
+    /**
+     * @return float|int
+     */
+    protected function convert(string $number)
     {
-        if (str_contains($number, '.')) {
+        if (strpos($number, '.') !== false) {
             return (float) $number;
         }
 

@@ -16,7 +16,10 @@ final class StringStream implements StreamInterface
      */
     private $stream;
 
-    private readonly int $size;
+    /**
+     * @readonly
+     */
+    private int $size;
 
     public function __construct(
         string $content
@@ -33,7 +36,6 @@ final class StringStream implements StreamInterface
         rewind($this->stream);
     }
 
-    #[Override]
     public function __toString(): string
     {
         $stream = $this->stream;
@@ -46,11 +48,9 @@ final class StringStream implements StreamInterface
             $content = '';
             // @codeCoverageIgnoreEnd
         }
-
         return $content;
     }
 
-    #[Override]
     public function close(): void
     {
         if ($this->stream === null) {
@@ -63,64 +63,52 @@ final class StringStream implements StreamInterface
         fclose($this->stream);
     }
 
-    #[Override]
     public function detach()
     {
         $resource = $this->stream;
         $this->stream = null;
-
         return $resource;
     }
 
-    #[Override]
     public function getSize(): int
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
-
         return $this->size;
     }
 
-    #[Override]
     public function tell(): int
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
         $tell = ftell($this->stream);
-
         // this doesn't happen anymore in php 8.3, but is kept here for older versions
         // @codeCoverageIgnoreStart
         if ($tell === false) {
             throw new StreamException('Could not retrieve stream position. Is the stream after EOF?');
         }
         // @codeCoverageIgnoreEnd
-
         return $tell;
     }
 
-    #[Override]
     public function eof(): bool
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
-
         return feof($this->stream);
     }
 
-    #[Override]
     public function isSeekable(): bool
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
-
         return true;
     }
 
-    #[Override]
     public function seek($offset, $whence = SEEK_SET): void
     {
         if ($this->stream === null) {
@@ -129,7 +117,6 @@ final class StringStream implements StreamInterface
         fseek($this->stream, $offset, $whence);
     }
 
-    #[Override]
     public function rewind(): void
     {
         if ($this->stream === null) {
@@ -138,17 +125,14 @@ final class StringStream implements StreamInterface
         rewind($this->stream);
     }
 
-    #[Override]
     public function isWritable(): bool
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
-
         return true;
     }
 
-    #[Override]
     public function write($string): int
     {
         if ($this->stream === null) {
@@ -160,24 +144,20 @@ final class StringStream implements StreamInterface
             throw new StreamException('Failed to write to the stream');
             // @codeCoverageIgnoreEnd
         }
-
         return $result;
     }
 
-    #[Override]
     public function isReadable(): bool
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
         }
-
         return true;
     }
 
     /**
      * @param int<1, max> $length
      */
-    #[Override]
     public function read($length): string
     {
         if ($this->stream === null) {
@@ -189,11 +169,9 @@ final class StringStream implements StreamInterface
             throw new StreamException('Failed to read from stream');
             // @codeCoverageIgnoreEnd
         }
-
         return $result;
     }
 
-    #[Override]
     public function getContents(): string
     {
         if ($this->stream === null) {
@@ -205,12 +183,13 @@ final class StringStream implements StreamInterface
             throw new StreamException('Failed to read from stream');
             // @codeCoverageIgnoreEnd
         }
-
         return $result;
     }
 
-    #[Override]
-    public function getMetadata($key = null): mixed
+    /**
+     * @return mixed
+     */
+    public function getMetadata($key = null)
     {
         if ($this->stream === null) {
             throw new StreamException('The stream is detached');
@@ -219,7 +198,6 @@ final class StringStream implements StreamInterface
         if ($key === null) {
             return $metadata;
         }
-
         return $metadata[$key] ?? null;
     }
 }

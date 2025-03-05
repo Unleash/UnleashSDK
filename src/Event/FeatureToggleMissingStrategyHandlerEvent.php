@@ -8,14 +8,21 @@ use Unleash\Client\DTO\Feature;
 final class FeatureToggleMissingStrategyHandlerEvent extends AbstractEvent
 {
     /**
+     * @readonly
+     */
+    private Context $context;
+    /**
+     * @readonly
+     */
+    private Feature $feature;
+    /**
      * @internal
      */
-    public function __construct(
-        private readonly Context $context,
-        private readonly Feature $feature,
-    ) {
+    public function __construct(Context $context, Feature $feature)
+    {
+        $this->context = $context;
+        $this->feature = $feature;
     }
-
     public function getContext(): Context
     {
         return $this->context;

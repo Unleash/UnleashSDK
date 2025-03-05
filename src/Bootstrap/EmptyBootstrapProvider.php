@@ -6,10 +6,12 @@ use JsonSerializable;
 use Override;
 use Traversable;
 
-final readonly class EmptyBootstrapProvider implements BootstrapProvider
+final class EmptyBootstrapProvider implements BootstrapProvider
 {
-    #[Override]
-    public function getBootstrap(): array|JsonSerializable|Traversable|null
+    /**
+     * @return mixed[]|\JsonSerializable|\Traversable|null
+     */
+    public function getBootstrap()
     {
         return null;
     }

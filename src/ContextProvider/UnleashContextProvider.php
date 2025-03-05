@@ -7,6 +7,5 @@ use Unleash\Client\Configuration\Context;
 
 interface UnleashContextProvider
 {
-    #[Pure]
     public function getContext(): Context;
 }

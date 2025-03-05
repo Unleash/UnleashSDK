@@ -10,5 +10,5 @@ interface BootstrapProvider
     /**
      * @return array<mixed>|JsonSerializable|Traversable<mixed>|null
      */
-    public function getBootstrap(): array|JsonSerializable|Traversable|null;
+    public function getBootstrap();
 }

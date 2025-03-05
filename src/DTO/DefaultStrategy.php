@@ -4,25 +4,51 @@ namespace Unleash\Client\DTO;
 
 use Override;
 
-final readonly class DefaultStrategy implements Strategy
+final class DefaultStrategy implements Strategy
 {
+    /**
+     * @readonly
+     */
+    private string $name;
+    /**
+     * @var array<string, string>
+     * @readonly
+     */
+    private array $parameters = [];
+    /**
+     * @var array<Constraint>
+     * @readonly
+     */
+    private array $constraints = [];
+    /**
+     * @var array<Segment>
+     * @readonly
+     */
+    private array $segments = [];
+    /**
+     * @readonly
+     */
+    private bool $nonexistentSegments = false;
+    /**
+     * @var array<Variant>
+     * @readonly
+     */
+    private array $variants = [];
     /**
      * @param array<string,string> $parameters
      * @param array<Constraint>    $constraints
      * @param array<Segment>       $segments
      * @param array<Variant>       $variants
      */
-    public function __construct(
-        private string $name,
-        private array $parameters = [],
-        private array $constraints = [],
-        private array $segments = [],
-        private bool $nonexistentSegments = false,
-        private array $variants = [],
-    ) {
+    public function __construct(string $name, array $parameters = [], array $constraints = [], array $segments = [], bool $nonexistentSegments = false, array $variants = [])
+    {
+        $this->name = $name;
+        $this->parameters = $parameters;
+        $this->constraints = $constraints;
+        $this->segments = $segments;
+        $this->nonexistentSegments = $nonexistentSegments;
+        $this->variants = $variants;
     }
-
-    #[Override]
     public function getName(): string
     {
         return $this->name;
@@ -31,7 +57,6 @@ final readonly class DefaultStrategy implements Strategy
     /**
      * @return array<string, string>
      */
-    #[Override]
     public function getParameters(): array
     {
         return $this->parameters;
@@ -40,7 +65,6 @@ final readonly class DefaultStrategy implements Strategy
     /**
      * @return array<Constraint>
      */
-    #[Override]
     public function getConstraints(): array
     {
         return $this->constraints;
@@ -49,7 +73,6 @@ final readonly class DefaultStrategy implements Strategy
     /**
      * @return array<Segment>
      */
-    #[Override]
     public function getSegments(): array
     {
         return $this->segments;
@@ -58,13 +81,11 @@ final readonly class DefaultStrategy implements Strategy
     /**
      * @return array<Variant>
      */
-    #[Override]
     public function getVariants(): array
     {
         return $this->variants;
     }
 
-    #[Override]
     public function hasNonexistentSegments(): bool
     {
         return $this->nonexistentSegments;

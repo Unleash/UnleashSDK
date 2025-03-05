@@ -9,38 +9,36 @@ use Unleash\Client\DTO\FeatureDependency;
 /**
  * @internal
  */
-final readonly class UnresolvedFeature implements Feature
+final class UnresolvedFeature implements Feature
 {
-    public function __construct(
-        private string $name,
-    ) {
+    /**
+     * @readonly
+     */
+    private string $name;
+    public function __construct(string $name)
+    {
+        $this->name = $name;
     }
-
-    #[Override]
     public function getName(): string
     {
         return $this->name;
     }
 
-    #[Override]
     public function isEnabled(): bool
     {
         return false;
     }
 
-    #[Override]
     public function getStrategies(): iterable
     {
         return [];
     }
 
-    #[Override]
     public function getVariants(): array
     {
         return [];
     }
 
-    #[Override]
     public function hasImpressionData(): bool
     {
         return false;

@@ -6,21 +6,24 @@ use JsonSerializable;
 use Override;
 use Traversable;
 
-final readonly class JsonSerializableBootstrapProvider implements BootstrapProvider
+final class JsonSerializableBootstrapProvider implements BootstrapProvider
 {
+    /**
+     * @var JsonSerializable|array<mixed>|Traversable<mixed>
+     * @readonly
+     */
+    private $data;
     /**
      * @param JsonSerializable|array<mixed>|Traversable<mixed> $data
      */
-    public function __construct(
-        private JsonSerializable|array|Traversable $data,
-    ) {
+    public function __construct($data)
+    {
+        $this->data = $data;
     }
-
     /**
      * @return array<mixed>|JsonSerializable|Traversable<mixed>
      */
-    #[Override]
-    public function getBootstrap(): array|JsonSerializable|Traversable
+    public function getBootstrap()
     {
         return $this->data;
     }
